@@ -39,19 +39,19 @@ app.use("/jobs", jobsRouter);
 app.use("/", metricsRouter); // serves GET /metrics and GET /health
 
 async function start() {
-  try {
-    // Ensure Postgres table exists before accepting traffic
-    await initDb();
-
-    // Start the background worker poll loop in the same process
-    pollLoop();
-
-    app.listen(PORT, () => {
-      console.log(`[Server] Listening on http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error("[Server] Failed to start:", err.message);
-    process.exit(1);
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    try {
+      await initDb();
+      pollLoop();
+      app.listen(PORT, () => {
+        console.log(`[Server] Listening on http://localhost:${PORT}`);
+      });
+      return;
+    } catch (err) {
+      console.error(`[Server] Start attempt ${attempt}/10 failed: ${err.message}`);
+      if (attempt === 10) process.exit(1);
+      await new Promise((r) => setTimeout(r, 3000 * attempt));
+    }
   }
 }
 
