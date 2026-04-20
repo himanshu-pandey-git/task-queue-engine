@@ -1,0 +1,37 @@
+{
+  "name": "Task Queue Engine",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+
+  "forwardPorts": [3000, 3001, 9090],
+  "portsAttributes": {
+    "3000": { "label": "API Server", "onAutoForward": "notify" },
+    "3001": { "label": "Grafana", "onAutoForward": "openBrowser" },
+    "9090": { "label": "Prometheus", "onAutoForward": "notify" }
+  },
+
+  "postCreateCommand": "npm install && cp .env.example .env",
+
+  "postStartCommand": "docker compose up -d && echo 'Waiting for Postgres...' && until docker compose exec -T postgres pg_isready -U postgres; do sleep 1; done && echo 'All services ready. Run: npm start'",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "humao.rest-client"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}
