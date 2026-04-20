@@ -1,29 +1,26 @@
 {
   "name": "Task Queue Engine",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
-
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
-      "version": "latest",
-      "moby": true
-    }
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
 
   "forwardPorts": [3000, 3001, 9090],
   "portsAttributes": {
-    "3000": { "label": "API Server", "onAutoForward": "notify" },
-    "3001": { "label": "Grafana", "onAutoForward": "openBrowser" },
+    "3000": { "label": "API Server", "onAutoForward": "openBrowser" },
+    "3001": { "label": "Grafana", "onAutoForward": "notify" },
     "9090": { "label": "Prometheus", "onAutoForward": "notify" }
   },
 
-  "postCreateCommand": "npm install && cp .env.example .env && docker compose pull",
+  "postCreateCommand": "npm install && cp .env.example .env",
 
-  "postStartCommand": "docker compose up -d && sleep 10 && echo 'Services started. Run: npm start'",
+  "remoteEnv": {
+    "REDIS_HOST": "redis",
+    "POSTGRES_HOST": "postgres"
+  },
 
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-azuretools.vscode-docker",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "humao.rest-client"
