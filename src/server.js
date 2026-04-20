@@ -39,7 +39,7 @@ app.use("/jobs", jobsRouter);
 app.use("/", metricsRouter); // serves GET /metrics and GET /health
 
 async function connectWithRetry() {
-  for (let attempt = 1; attempt <= 20; attempt++) {
+  for (let attempt = 1; attempt <= 10; attempt++) {
     try {
       await initDb();
       pollLoop();

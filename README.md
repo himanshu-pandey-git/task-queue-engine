@@ -41,32 +41,6 @@ npm start
 
 Run tests: `npm test`
 
-## Deploy to Railway
-
-1. Push this repo to GitHub (already done).
-2. Go to https://railway.app → **New Project** → **Deploy from GitHub repo** → pick this repo.
-3. In the same project, click **+ New** → **Database** → **Add PostgreSQL**.
-4. Click **+ New** → **Database** → **Add Redis**.
-5. Click your **app service** → **Variables** tab → add the two reference variables:
-
-   | Variable | Value (paste exactly, including the `${{ }}`) |
-   |---|---|
-   | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
-   | `REDIS_URL` | `${{Redis.REDIS_URL}}` |
-   | `NODE_ENV` | `production` |
-
-6. Click **Settings** → **Networking** → **Generate Domain** to get a public URL.
-7. Railway auto-redeploys. Watch the Deploy logs — you should see `[Redis] Connected` and `[Postgres] Tables ready`.
-
-## Try it
-
-```bash
-# Replace with your Railway URL or http://localhost:3000
-curl -X POST https://your-app.up.railway.app/jobs \
-  -H "Content-Type: application/json" \
-  -d '{"type":"send_email","payload":{"to":"alice@example.com","subject":"Hi"}}'
-
-curl https://your-app.up.railway.app/jobs
 ```
 
 ## Project structure
