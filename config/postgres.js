@@ -1,28 +1,28 @@
 const { Pool } = require('pg');
 require('dotenv').config();
- 
-const pool = new Pool(
-  process.env.DATABASE_URL
-    ? {
-        connectionString: process.env.DATABASE_URL,
-        // Railway Postgres requires SSL in production
-        ssl: process.env.NODE_ENV === 'production'
-          ? { rejectUnauthorized: false }
-          : false,
-      }
-    : {
-        host: process.env.POSTGRES_HOST || 'localhost',
-        port: parseInt(process.env.POSTGRES_PORT) || 5432,
-        database: process.env.POSTGRES_DB || 'taskqueue',
-        user: process.env.POSTGRES_USER || 'postgres',
-        password: process.env.POSTGRES_PASSWORD || 'yourpassword',
-        max: 10,
-        idleTimeoutMillis: 30000,
-      }
-);
- 
+
+const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+
+const config = url
+  ? {
+      connectionString: url,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    }
+  : {
+      host: process.env.PGHOST || process.env.POSTGRES_HOST || 'localhost',
+      port: parseInt(process.env.PGPORT || process.env.POSTGRES_PORT) || 5432,
+      database: process.env.PGDATABASE || process.env.POSTGRES_DB || 'taskqueue',
+      user: process.env.PGUSER || process.env.POSTGRES_USER || 'postgres',
+      password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD || 'yourpassword',
+      max: 10,
+      idleTimeoutMillis: 30000,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    };
+
+const pool = new Pool(config);
+
 pool.on('error', (err) => console.error('[Postgres] Unexpected error:', err.message));
- 
+
 async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS jobs (
@@ -43,5 +43,5 @@ async function initDb() {
   `);
   console.log('[Postgres] Tables ready');
 }
- 
+
 module.exports = { pool, initDb };
