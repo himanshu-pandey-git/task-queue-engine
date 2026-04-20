@@ -43,8 +43,8 @@ async function start() {
     try {
       await initDb();
       pollLoop();
-      app.listen(PORT, () => {
-        console.log(`[Server] Listening on http://localhost:${PORT}`);
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`[Server] Listening on http://0.0.0.0:${PORT}`);
       });
       return;
     } catch (err) {
