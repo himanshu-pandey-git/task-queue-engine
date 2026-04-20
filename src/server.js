@@ -38,21 +38,22 @@ app.get("/", (req, res) => {
 app.use("/jobs", jobsRouter);
 app.use("/", metricsRouter); // serves GET /metrics and GET /health
 
-async function start() {
-  for (let attempt = 1; attempt <= 10; attempt++) {
+async function connectWithRetry() {
+  for (let attempt = 1; attempt <= 20; attempt++) {
     try {
       await initDb();
       pollLoop();
-      app.listen(PORT, '0.0.0.0', () => {
-        console.log(`[Server] Listening on http://0.0.0.0:${PORT}`);
-      });
+      console.log('[Server] Database connected, worker started');
       return;
     } catch (err) {
-      console.error(`[Server] Start attempt ${attempt}/10 failed: ${err.message}`);
+      console.error(`[Server] DB connect attempt ${attempt}/10: ${err.message}`);
       if (attempt === 10) process.exit(1);
-      await new Promise((r) => setTimeout(r, 3000 * attempt));
+      await new Promise((r) => setTimeout(r, 3000));
     }
   }
 }
 
-start();
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Server] Listening on http://0.0.0.0:${PORT}`);
+  connectWithRetry();
+});
