@@ -16,9 +16,9 @@
     "9090": { "label": "Prometheus", "onAutoForward": "notify" }
   },
 
-  "postCreateCommand": "npm install && cp .env.example .env",
+  "postCreateCommand": "npm install && cp .env.example .env && docker compose pull",
 
-  "postStartCommand": "docker compose up -d && echo 'Waiting for Postgres...' && until docker compose exec -T postgres pg_isready -U postgres; do sleep 1; done && echo 'All services ready. Run: npm start'",
+  "postStartCommand": "docker compose up -d && sleep 10 && echo 'Services started. Run: npm start'",
 
   "customizations": {
     "vscode": {
